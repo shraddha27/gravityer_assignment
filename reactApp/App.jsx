@@ -8,13 +8,17 @@ const TodoApp = () => {
   // Load tasks from localStorage or initialize with the API
   useEffect(() => {
     const savedTodos = JSON.parse(localStorage.getItem("todos"));
-    if (savedTodos) {
+    if (savedTodos.length>0) {
+      console.log("saved",savedTodos);
       setTodos(savedTodos);
     } else {
       // Fetch from API
       fetch("https://dummyjson.com/todos")
         .then((response) => response.json())
-        .then((data) => setTodos(data.todos));
+        .then((data) => {
+          console.log("api",data.todos);
+          setTodos(data.todos); // Make sure it's an array
+          });
     }
   }, []);
 
@@ -23,8 +27,8 @@ const TodoApp = () => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  const addTodo = (text) => {
-    const newTodo = { id: Date.now(), text, completed: false };
+  const addTodo = (todo) => {
+    const newTodo = { id: Date.now(), todo, completed: false };
     setTodos([newTodo, ...todos]);
   };
 
@@ -84,7 +88,7 @@ const TodoItem = ({ todo, toggleComplete, deleteTodo }) => {
         onClick={() => toggleComplete(todo.id)}
         style={{ textDecoration: todo.completed ? "line-through" : "none" }}
       >
-        {todo.text}
+        {todo.todo}
       </span>
       <button onClick={() => deleteTodo(todo.id)}>Delete</button>
     </li>
